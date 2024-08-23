@@ -45,6 +45,10 @@ fn find_root(numbers: &mut Vec<i32>, mut p: i32) -> i32 {
 fn quick_union(numbers: &mut Vec<i32>, p: i32, q: i32) {
     let root_p = find_root(numbers, p);
     let root_q = find_root(numbers, q);
+    // same root, already connected
+    if root_p == root_q {
+        return;
+    }
     numbers[root_p as usize] = root_q;
 }
 
@@ -63,13 +67,19 @@ fn main() {
     }
     let file_path = &args[1];
     
-    // Call the read_file function with the file path
+    // couples of integers are stored in a vector, one tuple per index
     let numbers = read_file(file_path);
 
-    let max_value = numbers.iter().flat_map(|&(a, b)| vec![a, b]).max().unwrap_or(0) + 1;
-
+    let max_value = numbers.iter()
+                                .flat_map(|&(a, b)| vec![a, b])
+                                .max()
+                                .unwrap_or(0) + 1;
+    // Store the connection, each index is a number, the value is the root
+    // When index and value are the same, it means the number is a root of a tree
     let mut id: Vec<i32> = (0..max_value).collect();
-    //let tree: Vec<i32> = Vec::from_iter(0..numbers.len() as i32);
+
+    // For Weighted Quick Union, we need to store the size of the tree
+    let mut sz: Vec<i32> = vec![0; max_value as usize];
 
     print!("length of numbers: {}, max value: {}\n", numbers.len(), max_value -1 );
     
@@ -80,5 +90,5 @@ fn main() {
             println!("Connected {} and {}\nidx: {:?}\nid:  {:?}", val.0, val.1, (0..max_value).collect::<Vec<_>>(), id);
         }
     }
-    print!("Final id vector: \n{:?}\n{:?}", (0..max_value).collect::<Vec<_>>(), id);
+    print!("Final id vector: \nidx: {:?}\nid:  {:?}\nsz:  {:?}", (0..max_value).collect::<Vec<_>>(), id, sz);
 }
