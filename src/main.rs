@@ -80,5 +80,5 @@ fn main() {
             println!("Connected {} and {}\nidx: {:?}\nid:  {:?}", val.0, val.1, (0..max_value).collect::<Vec<_>>(), id);
         }
     }
-    print!("Final id vector: {:?}", id);
+    print!("Final id vector: \n{:?}\n{:?}", (0..max_value).collect::<Vec<_>>(), id);
 }
