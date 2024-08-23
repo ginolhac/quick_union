@@ -42,21 +42,28 @@ fn find_root(numbers: &mut Vec<i32>, mut p: i32) -> i32 {
     p
 }
 
-fn quick_union(numbers: &mut Vec<i32>, p: i32, q: i32) {
-    let root_p = find_root(numbers, p);
-    let root_q = find_root(numbers, q);
-    // same root, already connected
-    if root_p == root_q {
-        return;
-    }
-    numbers[root_p as usize] = root_q;
-}
-
 fn connected(numbers: &mut Vec<i32>, p: i32, q: i32) -> bool {
     let res = find_root(numbers, p) == find_root(numbers, q);
     res
 }
 
+fn quick_union(numbers: &mut Vec<i32>, sz: &mut Vec<i32>, p: i32, q: i32) {
+    // same root, already connected
+    if connected(numbers, p, q) {
+        print!("{} and {} are already connected\n", p, q);
+        return;
+    }
+    let root_p = find_root(numbers, p);
+    let root_q = find_root(numbers, q);
+    // connect the smaller tree to the larger tree
+    if sz[root_p as usize] < sz[root_q as usize] {
+        numbers[root_p as usize] = root_q;
+        sz[root_q as usize] += sz[root_p as usize];
+    } else {
+        numbers[root_q as usize] = root_p;
+        sz[root_p as usize] += sz[root_q as usize];
+    }
+}
 
 fn main() {
     
@@ -79,16 +86,16 @@ fn main() {
     let mut id: Vec<i32> = (0..max_value).collect();
 
     // For Weighted Quick Union, we need to store the size of the tree
-    let mut sz: Vec<i32> = vec![0; max_value as usize];
+    let mut sz: Vec<i32> = vec![1; max_value as usize];
 
     print!("length of numbers: {}, max value: {}\n", numbers.len(), max_value -1 );
     
     for (i, val ) in numbers.iter().enumerate() {
         println!("index {}, 1st: {}, 2nd: {}", i, val.0, val.1);
-        if !connected(&mut id, val.0, val.1) {
-            quick_union(&mut id, val.0, val.1);
-            println!("Connected {} and {}\nidx: {:?}\nid:  {:?}", val.0, val.1, (0..max_value).collect::<Vec<_>>(), id);
-        }
+        //if !connected(&mut id, val.0, val.1) {
+            quick_union(&mut id, &mut sz, val.0, val.1);
+            println!("Connected {} and {}\nidx: {:?}\nid:  {:?}\nsz:  {:?}", val.0, val.1, (0..max_value).collect::<Vec<_>>(), id, sz);
+        //}
     }
     print!("Final id vector: \nidx: {:?}\nid:  {:?}\nsz:  {:?}", (0..max_value).collect::<Vec<_>>(), id, sz);
 }
