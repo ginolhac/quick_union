@@ -37,6 +37,8 @@ fn read_file(file_path: &str) -> Vec<(i32, i32)> {
 
 fn find_root(numbers: &mut Vec<i32>, mut p: i32) -> i32 {
     while p != numbers[p as usize] {
+        // path compression
+        numbers[p as usize] = numbers[numbers[p as usize] as usize];
         p = numbers[p as usize];
     }
     p
